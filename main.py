@@ -66,6 +66,12 @@ def main():
                 pygame.quit()
                 return
 
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.CollisionCheck(shot):
+                    asteroid.split()
+                    shot.kill()
+
         # Clear the screen
         screen.fill("black")
 
