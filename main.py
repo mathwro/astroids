@@ -3,6 +3,7 @@ from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from shot import Shot
 
 def main():
     print("Starting asteroids!")
@@ -17,15 +18,26 @@ def main():
     updatables = pygame.sprite.Group()
     drawables = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
     # Containers
     Asteroid.containers = [updatables, drawables, asteroids]
     AsteroidField.containers = [updatables]
     Player.containers = [updatables, drawables]
+    Shot.containers = [updatables, drawables, shots]
 
     # Initialize
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
+
+    # font object
+    font = pygame.font.Font(None, 76)
+    game_over = font.render("Game Over", True, "white")
+    text_rect = game_over.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+
+    # fade screen
+    fade = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+    fade.fill("black")
 
     while True:
         for event in pygame.event.get():
@@ -39,6 +51,20 @@ def main():
         # Update the player
         for updatable in updatables:
             updatable.update(dt)
+
+        for asteroid in asteroids:
+            if player.CollisionCheck(asteroid):
+                print("Game over!")
+                screen.blit(game_over, text_rect)
+                pygame.display.flip()
+                for alpha in range(0, 255, 5):
+                    fade.set_alpha(alpha)
+                    screen.blit(fade, (0, 0))
+                    pygame.display.flip()
+                    pygame.time.delay(50)
+                pygame.time.delay(1500)
+                pygame.quit()
+                return
 
         # Clear the screen
         screen.fill("black")
